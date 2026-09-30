@@ -449,24 +449,192 @@ document.addEventListener('DOMContentLoaded', () => {
     refreshSupplierDropdown();
     refreshRoastBatchDropdowns();
 
-    // Initialize View Mode: Auto-adjust to screen size (Desktop Web on >= 768px, Mobile on < 768px)
-    const isDesktop = window.innerWidth >= 768;
-    const initialMode = isDesktop ? 'web' : 'mobile';
-    setViewMode(initialMode, false);
+    // ==================== SMART PLATFORM DETECTION ENGINE ====================
+    // Detects the actual device/platform to auto-set the best UI mode
+
+    const platformInfo = detectPlatform();
+    console.log('[CRS] Platform Detection:', platformInfo);
+
+    // Set initial mode based on smart detection (no toast on init)
+    setViewMode(platformInfo.recommendedMode, false);
+
+    // Show a subtle platform info on first visit
+    if (!localStorage.getItem('crs_platform_noticed')) {
+        localStorage.setItem('crs_platform_noticed', '1');
+        setTimeout(() => {
+            showToast(`Platform: ${platformInfo.deviceLabel} — UI ${platformInfo.recommendedMode === 'web' ? 'Desktop' : 'Mobile'}`);
+        }, 1500);
+    }
 });
 
-// Auto-adjust layout when window is resized
+/**
+ * SMART PLATFORM DETECTION ENGINE
+ * Combines multiple signals to accurately determine the device type.
+ * Returns an object with detection results and a recommended UI mode.
+ */
+function detectPlatform() {
+    const ua = navigator.userAgent || '';
+    const platform = navigator.platform || '';
+    const maxTouchPoints = navigator.maxTouchPoints || 0;
+
+    // --- Signal 1: User Agent keywords ---
+    const mobileUARegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet|Silk|Kindle|HMSCore/i;
+    const isUAMobile = mobileUARegex.test(ua);
+
+    // iPad detection (iPadOS 13+ reports as Mac)
+    const isIPad = /Macintosh/i.test(ua) && maxTouchPoints > 1;
+
+    // --- Signal 2: Touch capability ---
+    const hasTouchScreen = ('ontouchstart' in window) ||
+                           (maxTouchPoints > 0) ||
+                           (navigator.msMaxTouchPoints && navigator.msMaxTouchPoints > 0);
+
+    // --- Signal 3: Screen dimensions ---
+    const screenW = window.screen.width;
+    const screenH = window.screen.height;
+    const viewportW = window.innerWidth;
+    const viewportH = window.innerHeight;
+    const smallerDimension = Math.min(screenW, screenH);
+    const largerDimension = Math.max(screenW, screenH);
+
+    // --- Signal 4: Device Pixel Ratio (mobile tend to have higher DPR) ---
+    const dpr = window.devicePixelRatio || 1;
+
+    // --- Signal 5: Orientation ---
+    const isPortrait = viewportH > viewportW;
+
+    // --- Signal 6: Standalone / PWA mode ---
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.navigator.standalone === true;
+
+    // --- Signal 7: Pointer precision (coarse = finger, fine = mouse) ---
+    const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+    const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+    // --- Signal 8: Hover capability (touch devices typically can't hover) ---
+    const canHover = window.matchMedia('(hover: hover)').matches;
+
+    // ==================== SCORING ALGORITHM ====================
+    // Each signal contributes a score. Higher = more likely MOBILE.
+    let mobileScore = 0;
+
+    // User Agent (strong signal: +3)
+    if (isUAMobile || isIPad) mobileScore += 3;
+
+    // Touch screen (moderate signal: +2)
+    if (hasTouchScreen && !isFinePointer) mobileScore += 2;
+    else if (hasTouchScreen && isFinePointer) mobileScore += 0.5; // Touchscreen laptop
+
+    // Coarse pointer / no hover (strong signal for mobile: +2)
+    if (isCoarsePointer && !canHover) mobileScore += 2;
+    else if (isCoarsePointer) mobileScore += 1;
+
+    // Small physical screen (phone < 640px smaller dim, tablet < 1024px)
+    if (smallerDimension <= 480) mobileScore += 3;      // Phone
+    else if (smallerDimension <= 768) mobileScore += 2;  // Small tablet
+    else if (smallerDimension <= 1024) mobileScore += 1; // Large tablet
+
+    // High DPR (mobile devices often 2x-4x)
+    if (dpr >= 2.5) mobileScore += 1;
+
+    // Portrait orientation on narrow viewport
+    if (isPortrait && viewportW < 768) mobileScore += 1;
+
+    // Narrow viewport (strong signal: +2)
+    if (viewportW < 768) mobileScore += 2;
+    else if (viewportW < 1024) mobileScore += 0.5;
+
+    // Desktop penalty: if fine pointer + hover + wide screen → subtract
+    if (isFinePointer && canHover && viewportW >= 1024) mobileScore -= 2;
+
+    // ==================== DETERMINE DEVICE TYPE ====================
+    let deviceType, deviceLabel, recommendedMode;
+
+    if (mobileScore >= 6) {
+        // Definitely mobile device
+        if (smallerDimension > 600 || largerDimension > 900) {
+            deviceType = 'tablet';
+            deviceLabel = isIPad ? 'iPad / Tablet' : 'Tablet';
+        } else {
+            deviceType = 'phone';
+            deviceLabel = /iPhone/i.test(ua) ? 'iPhone' :
+                          /Android/i.test(ua) ? 'Android Phone' : 'Smartphone';
+        }
+        recommendedMode = 'mobile';
+    } else if (mobileScore >= 3) {
+        // Ambiguous — could be tablet landscape or touchscreen laptop
+        if (viewportW >= 1024) {
+            deviceType = 'tablet-landscape';
+            deviceLabel = 'Tablet (Landscape) / Touchscreen';
+            recommendedMode = 'web'; // Wide enough for desktop layout
+        } else {
+            deviceType = 'tablet-portrait';
+            deviceLabel = 'Tablet (Portrait)';
+            recommendedMode = 'mobile';
+        }
+    } else {
+        // Desktop/Laptop
+        deviceType = 'desktop';
+        deviceLabel = /Mac/i.test(platform) ? 'Mac Desktop' :
+                      /Win/i.test(platform) ? 'Windows Desktop' :
+                      /Linux/i.test(platform) ? 'Linux Desktop' : 'Desktop';
+        recommendedMode = 'web';
+    }
+
+    return {
+        deviceType,
+        deviceLabel,
+        recommendedMode,
+        signals: {
+            userAgent: isUAMobile,
+            iPad: isIPad,
+            touchScreen: hasTouchScreen,
+            coarsePointer: isCoarsePointer,
+            finePointer: isFinePointer,
+            canHover,
+            screenWidth: screenW,
+            screenHeight: screenH,
+            viewportWidth: viewportW,
+            viewportHeight: viewportH,
+            devicePixelRatio: dpr,
+            isPortrait,
+            isStandalone,
+            mobileScore: Math.round(mobileScore * 10) / 10
+        }
+    };
+}
+
+// ==================== AUTO-ADJUST ON RESIZE & ORIENTATION CHANGE ====================
 let resizeDebounce = null;
+let userManualOverride = false; // Track if user manually toggled mode
+
+// Override setViewMode to track manual toggles
+const _originalSetViewMode = setViewMode;
+// (We keep the existing setViewMode function, but add manual override tracking below)
+
 window.addEventListener('resize', () => {
+    // Don't auto-switch if user manually chose a mode
+    if (userManualOverride) return;
+
     clearTimeout(resizeDebounce);
     resizeDebounce = setTimeout(() => {
-        const isWide = window.innerWidth >= 768;
-        if (isWide && currentViewMode !== 'web') {
-            setViewMode('web', false);
-        } else if (!isWide && currentViewMode !== 'mobile') {
-            setViewMode('mobile', false);
+        const newPlatform = detectPlatform();
+        if (newPlatform.recommendedMode !== currentViewMode) {
+            setViewMode(newPlatform.recommendedMode, false);
+            console.log('[CRS] Auto-adjusted UI mode:', newPlatform.recommendedMode, newPlatform.deviceLabel);
         }
-    }, 120);
+    }, 200);
+});
+
+// Also listen for orientation changes (mobile/tablet)
+window.addEventListener('orientationchange', () => {
+    if (userManualOverride) return;
+    setTimeout(() => {
+        const newPlatform = detectPlatform();
+        if (newPlatform.recommendedMode !== currentViewMode) {
+            setViewMode(newPlatform.recommendedMode, true);
+        }
+    }, 300);
 });
 
 // ==================== VIEW MODE (DESKTOP WEB vs MOBILE PHONE) ====================
@@ -480,6 +648,9 @@ function setViewMode(mode, showNotice = true) {
     const btnWeb = document.getElementById('btn-mode-web');
     const btnMobile = document.getElementById('btn-mode-mobile');
 
+    // Detect current platform for informative messages
+    const platform = (typeof detectPlatform === 'function') ? detectPlatform() : null;
+
     if (appEl) {
         if (mode === 'web') {
             appEl.classList.remove('mobile-mode');
@@ -488,7 +659,12 @@ function setViewMode(mode, showNotice = true) {
             document.body.classList.add('is-web-mode');
             if (btnWeb) btnWeb.classList.add('active');
             if (btnMobile) btnMobile.classList.remove('active');
-            if (showNotice) showToast('Tampilan disesuaikan ke Web Desktop (Layar Lebar)');
+            if (showNotice) {
+                const label = platform ? ` (${platform.deviceLabel})` : '';
+                showToast(`Tampilan Desktop${label}`);
+                // User manually chose this mode — stop auto-switching
+                userManualOverride = true;
+            }
         } else {
             appEl.classList.remove('web-mode');
             appEl.classList.add('mobile-mode');
@@ -496,7 +672,12 @@ function setViewMode(mode, showNotice = true) {
             document.body.classList.add('is-mobile-preview');
             if (btnWeb) btnWeb.classList.remove('active');
             if (btnMobile) btnMobile.classList.add('active');
-            if (showNotice) showToast('Tampilan disesuaikan ke Mobile');
+            if (showNotice) {
+                const label = platform ? ` (${platform.deviceLabel})` : '';
+                showToast(`Tampilan Mobile${label}`);
+                // User manually chose this mode — stop auto-switching
+                userManualOverride = true;
+            }
         }
     }
 
