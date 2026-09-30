@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Coffee Roasting System - Kelola proses roasting kopi dengan lebih mudah dan profesional">
+    <meta name="theme-color" content="#1a1210">
+    <title>Coffee Roasting System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ==================== APP CONTAINER ==================== -->
+    <div id="app" class="web-mode">
+
+        <!-- ==================== SPLASH SCREEN ==================== -->
+        <div id="splash-screen" class="page active">
+            <div class="splash-bg">
+                <div class="splash-overlay"></div>
+                <div class="splash-content">
+                    <div class="splash-logo-container">
+                        <div class="splash-icon">
+                            <span class="material-icons-round">local_cafe</span>
+                        </div>
+                        <h1 class="splash-title">COFFEE<br>ROASTING<br>SYSTEM</h1>
+                    </div>
+                    <p class="splash-subtitle">Kelola data kopi, mesin, dan proses roasting dengan lebih mudah dan profesional.</p>
+                    <div class="splash-version">v1.0.0</div>
+                    <div class="splash-loader">
+                        <div class="splash-loader-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== LOGIN SCREEN ==================== -->
+        <div id="login-screen" class="page">
+            <div class="login-container">
+                <div class="login-header">
+                    <div class="login-logo">
+                        <span class="material-icons-round">local_cafe</span>
+                    </div>
+                    <h1 class="login-title">COFFEE ROASTING<br>SYSTEM</h1>
+                    <p class="login-desc">Masuk ke akun Anda untuk melanjutkan</p>
+                </div>
+                <form id="login-form" class="login-form">
+                    <div class="input-group">
+                        <span class="material-icons-round input-icon">person_outline</span>
+                        <input type="text" id="login-username" placeholder="Username" value="admin" autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <span class="material-icons-round input-icon">lock_outline</span>
+                        <input type="password" id="login-password" placeholder="Password" value="admin" autocomplete="current-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <span class="material-icons-round">visibility_off</span>
+                        </button>
+                    </div>
+                    <div class="login-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" checked>
+                            <span class="checkmark"></span>
+                            Ingat saya
+                        </label>
+                        <a href="#" class="forgot-link">Lupa password?</a>
+                    </div>
+                    <button type="submit" class="btn-primary btn-login" id="btn-login">Login</button>
+                </form>
+                <div class="login-footer">Coffee Roasting System v1.0.0</div>
+            </div>
+        </div>
+
+        <!-- ==================== MAIN APP ==================== -->
+        <div id="main-app" class="page">
+            
+            <!-- Sidebar Overlay (Mobile Drawer) -->
+            <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+            <!-- Sidebar (Persistent on Desktop, Drawer on Mobile) -->
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <div class="sidebar-logo">
+                        <span class="material-icons-round">local_cafe</span>
+                        <div>
+                            <h3>COFFEE ROASTING<br>SYSTEM</h3>
+                        </div>
+                    </div>
+                    <button class="btn-icon sidebar-close" onclick="closeSidebar()">
+                        <span class="material-icons-round">close</span>
+                    </button>
+                </div>
+                <div class="sidebar-user" onclick="openModalProfile()" title="Lihat Profil Admin">
+                    <div class="sidebar-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div>
+                        <h4 id="sidebar-user-name">Admin</h4>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <a class="sidebar-item active" onclick="navigateTo('dashboard')">
+                        <span class="material-icons-round">dashboard</span>
+                        Dashboard
+                    </a>
+                    <div class="sidebar-section-title">MASTER DATA</div>
+                    <a class="sidebar-item" onclick="navigateTo('master-kopi')">
+                        <span class="material-icons-round">coffee</span>
+                        Kopi
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('master-supplier')">
+                        <span class="material-icons-round">local_shipping</span>
+                        Supplier
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('master-mesin')">
+                        <span class="material-icons-round">precision_manufacturing</span>
+                        Mesin Roasting
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('master-operator')">
+                        <span class="material-icons-round">engineering</span>
+                        Operator
+                    </a>
+                    <div class="sidebar-section-title">ROASTING</div>
+                    <a class="sidebar-item" onclick="navigateTo('roast-batch')">
+                        <span class="material-icons-round">local_fire_department</span>
+                        Roast Batch
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('roast-profile')">
+                        <span class="material-icons-round">insights</span>
+                        Roast Profile
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('roast-history')">
+                        <span class="material-icons-round">history</span>
+                        Roast History
+                    </a>
+                    <div class="sidebar-section-title">QUALITY</div>
+                    <a class="sidebar-item" onclick="navigateTo('cupping')">
+                        <span class="material-icons-round">science</span>
+                        Cupping
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('quality-control')">
+                        <span class="material-icons-round">verified</span>
+                        Quality Control
+                    </a>
+                    <div class="sidebar-section-title">SISTEM</div>
+                    <a class="sidebar-item" onclick="navigateTo('laporan')">
+                        <span class="material-icons-round">assessment</span>
+                        Laporan
+                    </a>
+                    <a class="sidebar-item" onclick="navigateTo('pengaturan')">
+                        <span class="material-icons-round">settings</span>
+                        Pengaturan
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Workspace / Main Body -->
+            <div class="main-body" id="main-body">
+                <!-- Top Bar -->
+                <header class="top-bar" id="top-bar">
+                    <div class="top-bar-left">
+                        <button class="btn-icon back-btn" id="btn-back" onclick="goBack()" style="display:none" title="Kembali">
+                            <span class="material-icons-round">arrow_back</span>
+                        </button>
+                        <button class="btn-icon menu-btn" id="btn-menu" onclick="openSidebar()" title="Menu">
+                            <span class="material-icons-round">menu</span>
+                        </button>
+                        <h2 class="page-title" id="page-title">Dashboard</h2>
+                        <div class="desktop-breadcrumb" id="desktop-breadcrumb">
+                            <span class="breadcrumb-item">Sistem Roasting</span>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-current" id="breadcrumb-current">Dashboard</span>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Search Bar -->
+                    <div class="desktop-search-container">
+                        <span class="material-icons-round">search</span>
+                        <input type="text" id="global-search-input" placeholder="Cari data kopi, supplier, mesin..." oninput="handleGlobalSearch(event)">
+                    </div>
+
+                    <div class="top-bar-right">
+                        <!-- View Mode Switcher: Desktop Web vs Mobile Phone -->
+                        <div class="view-mode-toggle" title="Ganti Tampilan Layar">
+                            <button class="mode-btn active" id="btn-mode-web" onclick="setViewMode('web')" title="Tampilan Web Desktop">
+                                <span class="material-icons-round">desktop_windows</span>
+                                <span class="mode-text">Web</span>
+                            </button>
+                            <button class="mode-btn" id="btn-mode-mobile" onclick="setViewMode('mobile')" title="Tampilan Mobile Phone">
+                                <span class="material-icons-round">smartphone</span>
+                                <span class="mode-text">Mobile</span>
+                            </button>
+                        </div>
+
+                        <!-- Quick Action Shortcut -->
+                        <button class="btn-quick-batch" onclick="navigateTo('roast-batch'); toggleBatchDemo();" title="Mulai Batch Roasting Baru">
+                            <span class="material-icons-round">local_fire_department</span>
+                            <span>+ Batch Baru</span>
+                        </button>
+
+                        <button class="btn-icon" id="btn-theme-toggle" onclick="toggleTheme()" title="Ganti Tema">
+                            <span class="material-icons-round">dark_mode</span>
+                        </button>
+
+                        <button class="btn-icon" id="btn-notification" onclick="showToast('Tidak ada notifikasi baru')">
+                            <span class="material-icons-round">notifications_none</span>
+                        </button>
+
+                        <div class="avatar-small" onclick="openModalProfile()" title="Profil Admin">
+                            <span class="material-icons-round">person</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- ========== CONTENT VIEWS ========== -->
+                <main class="content" id="content">
+
+                <!-- DASHBOARD VIEW -->
+                <div id="view-dashboard" class="view active">
+                    <div class="dashboard-welcome">
+                        <div class="welcome-card">
+                            <div class="welcome-text">
+                                <p class="welcome-greeting">Selamat Datang,</p>
+                                <h2 class="welcome-name">Admin</h2>
+                                <p class="welcome-desc">Kelola proses roasting kopi dengan lebih mudah dan efisien.</p>
+                            </div>
+                            <div class="welcome-beans-illustration" title="Coffee Roasting System">
+                                <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" fill="#c8956c" opacity="0.3"/>
+                                    <circle cx="12" cy="12" r="9" stroke="#d4a055" stroke-width="1.5" stroke-dasharray="3 2"/>
+                                    <path d="M12 5C8.13 5 5 8.13 5 12c0 3.87 3.13 7 7 7s7-3.13 7-7c0-3.87-3.13-7-7-7zm0 11.5c-2.48 0-4.5-2.02-4.5-4.5S9.52 7.5 12 7.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5z" fill="#e8a87c"/>
+                                    <path d="M12 8.5c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5c.35 0 .68-.06 1-.16-1.18-.58-2-1.8-2-3.21 0-1.42.82-2.63 2-3.21-.32-.1-.65-.16-1-.16z" fill="#3d2217"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card" onclick="navigateTo('master-kopi')">
+                            <div class="stat-icon coffee-icon">
+                                <span class="material-icons-round">coffee</span>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Kopi</span>
+                                <h3 class="stat-value" id="stat-kopi">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('master-supplier')">
+                            <div class="stat-icon supplier-icon">
+                                <span class="material-icons-round">local_shipping</span>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Supplier</span>
+                                <h3 class="stat-value" id="stat-supplier">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('master-mesin')">
+                            <div class="stat-icon mesin-icon">
+                                <span class="material-icons-round">precision_manufacturing</span>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Mesin Roasting</span>
+                                <h3 class="stat-value" id="stat-mesin">0</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card" onclick="navigateTo('roast-batch')">
+                            <div class="stat-icon batch-icon">
+                                <span class="material-icons-round">local_fire_department</span>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Batch Roasting</span>
+                                <h3 class="stat-value" id="stat-batch">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-desktop-layout">
+                        <!-- Main Left Column: Data Kopi Terbaru -->
+                        <div class="dashboard-main-col">
+                            <div class="section-header">
+                                <h3>Data Kopi Terbaru</h3>
+                                <a class="link-all" onclick="navigateTo('master-kopi')">Lihat Semua Kopi &rarr;</a>
+                            </div>
+                            <div class="recent-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Nama Kopi</th>
+                                            <th>Origin</th>
+                                            <th class="desktop-only-col">Varietas</th>
+                                            <th class="desktop-only-col">Proses</th>
+                                            <th class="desktop-only-col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-kopi-table">
+                                        <tr><td colspan="6" class="empty-cell">Belum ada data</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Roasting Machine Live Status & Quick Operations -->
+                        <div class="dashboard-side-col">
+                            <div class="section-header">
+                                <h3>Status Mesin Roaster</h3>
+                                <a class="link-all" onclick="navigateTo('master-mesin')">Kelola Mesin</a>
+                            </div>
+                            <div class="machine-status-widget">
+                                <div class="machine-status-item">
+                                    <div class="machine-status-icon">
+                                        <span class="material-icons-round">precision_manufacturing</span>
+                                    </div>
+                                    <div class="machine-status-info">
+                                        <h4>Mesin 1 (Probat P12)</h4>
+                                        <p>Gas • Kapasitas 12 kg</p>
+                                    </div>
+                                    <span class="badge-status-pill ready">Siap</span>
+                                </div>
+                                <div class="machine-status-item">
+                                    <div class="machine-status-icon">
+                                        <span class="material-icons-round">precision_manufacturing</span>
+                                    </div>
+                                    <div class="machine-status-info">
+                                        <h4>Mesin 2 (Loring S35)</h4>
+                                        <p>Listrik • Kapasitas 35 kg</p>
+                                    </div>
+                                    <span class="badge-status-pill ready">Siap</span>
+                                </div>
+                                <div class="machine-status-item">
+                                    <div class="machine-status-icon">
+                                        <span class="material-icons-round">precision_manufacturing</span>
+                                    </div>
+                                    <div class="machine-status-info">
+                                        <h4>Mesin 3 (Typhoon 500)</h4>
+                                        <p>Gas • Kapasitas 50 kg</p>
+                                    </div>
+                                    <span class="badge-status-pill ready">Siap</span>
+                                </div>
+                            </div>
+
+                            <div class="section-header mt-16">
+                                <h3>Aksi Cepat Roastery</h3>
+                            </div>
+                            <div class="quick-actions-card">
+                                <button class="btn-quick-action" onclick="navigateTo('roast-batch'); toggleBatchDemo();">
+                                    <span class="material-icons-round">local_fire_department</span>
+                                    <div>
+                                        <strong>Mulai Batch Roasting Baru</strong>
+                                        <p>Log timer & kalkulasi susut bobot</p>
+                                    </div>
+                                </button>
+                                <button class="btn-quick-action" onclick="navigateTo('tambah-kopi');">
+                                    <span class="material-icons-round">add_circle_outline</span>
+                                    <div>
+                                        <strong>Tambah Varietas Biji Kopi</strong>
+                                        <p>Registrasi green bean baru</p>
+                                    </div>
+                                </button>
+                                <button class="btn-quick-action" onclick="exportDataCSV();">
+                                    <span class="material-icons-round">download</span>
+                                    <div>
+                                        <strong>Export Laporan Produksi (CSV)</strong>
+                                        <p>Unduh data inventaris & sangrai</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MASTER KOPI VIEW -->
+                <div id="view-master-kopi" class="view">
+                    <div class="search-bar">
+                        <div class="search-input-wrapper">
+                            <span class="material-icons-round">search</span>
+                            <input type="text" id="search-kopi" placeholder="Cari kopi..." oninput="filterKopi()">
+                        </div>
+                        <button class="btn-filter" id="btn-filter-kopi" onclick="toggleFilterPills('kopi')" title="Filter Kopi">
+                            <span class="material-icons-round">tune</span>
+                        </button>
+                        <div class="desktop-view-toggle">
+                            <button class="btn-icon active" id="btn-view-grid" onclick="setKopiViewLayout('grid')" title="Tampilan Kartu"><span class="material-icons-round">grid_view</span></button>
+                            <button class="btn-icon" id="btn-view-table" onclick="setKopiViewLayout('table')" title="Tampilan Tabel"><span class="material-icons-round">view_list</span></button>
+                        </div>
+                        <button class="btn-add" onclick="navigateTo('tambah-kopi')">
+                            <span class="material-icons-round">add</span>
+                            <span>Tambah Kopi</span>
+                        </button>
+                    </div>
+                    <div class="filter-pills" id="filter-pills-kopi" style="display:none">
+                        <button class="pill active" onclick="setKopiFilterPill('all', this)">Semua</button>
+                        <button class="pill" onclick="setKopiFilterPill('Arabica', this)">Arabica</button>
+                        <button class="pill" onclick="setKopiFilterPill('Robusta', this)">Robusta</button>
+                        <button class="pill" onclick="setKopiFilterPill('Specialty', this)">Specialty</button>
+                        <button class="pill" onclick="setKopiFilterPill('Aktif', this)">Aktif</button>
+                    </div>
+                    <!-- Cards Grid Container -->
+                    <div class="list-container kopi-grid-desktop" id="kopi-list">
+                        <div class="empty-state">
+                            <span class="material-icons-round">coffee</span>
+                            <p>Belum ada data kopi</p>
+                            <button class="btn-primary btn-sm" onclick="navigateTo('tambah-kopi')">Tambah Kopi</button>
+                        </div>
+                    </div>
+                    <!-- Data Table Container (Toggled) -->
+                    <div class="recent-table desktop-table-wrapper" id="kopi-table-container" style="display:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Kode</th>
+                                    <th>Nama Kopi</th>
+                                    <th>Origin</th>
+                                    <th>Varietas</th>
+                                    <th>Ketinggian</th>
+                                    <th>Proses</th>
+                                    <th>Grade</th>
+                                    <th>Supplier</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kopi-table-body">
+                                <tr><td colspan="10" class="empty-cell">Memuat data...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAMBAH KOPI VIEW -->
+                <div id="view-tambah-kopi" class="view">
+                    <div class="form-container">
+                        <div class="form-section-title">Informasi Dasar</div>
+                        <form id="form-kopi" onsubmit="saveKopi(event)">
+                            <input type="hidden" id="kopi-edit-id">
+                            <div class="form-desktop-grid">
+                                <div class="form-group">
+                                    <label>Kode Kopi <span class="required">*</span></label>
+                                    <input type="text" id="kopi-kode" placeholder="Contoh: COF-001" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nama Kopi <span class="required">*</span></label>
+                                    <input type="text" id="kopi-nama" placeholder="Contoh: Arabica Gayo" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Negara</label>
+                                    <select id="kopi-negara">
+                                        <option value="">Pilih negara</option>
+                                        <option value="Indonesia" selected>Indonesia</option>
+                                        <option value="Brazil">Brazil</option>
+                                        <option value="Colombia">Colombia</option>
+                                        <option value="Ethiopia">Ethiopia</option>
+                                        <option value="Vietnam">Vietnam</option>
+                                        <option value="India">India</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Region</label>
+                                    <input type="text" id="kopi-region" placeholder="Contoh: Gayo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Farm</label>
+                                    <input type="text" id="kopi-farm" placeholder="Contoh: Gayo Highlands">
+                                </div>
+                                <div class="form-group">
+                                    <label>Varietas</label>
+                                    <select id="kopi-varietas">
+                                        <option value="">Pilih varietas</option>
+                                        <option value="Arabica">Arabica</option>
+                                        <option value="Robusta">Robusta</option>
+                                        <option value="Typica">Typica</option>
+                                        <option value="Catimor">Catimor</option>
+                                        <option value="Bourbon">Bourbon</option>
+                                        <option value="S-795">S-795</option>
+                                        <option value="Liberica">Liberica</option>
+                                        <option value="Excelsa">Excelsa</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Ketinggian (MDPL)</label>
+                                    <input type="number" id="kopi-ketinggian" placeholder="Contoh: 1200">
+                                </div>
+                                <div class="form-group">
+                                    <label>Proses</label>
+                                    <select id="kopi-proses">
+                                        <option value="">Pilih proses</option>
+                                        <option value="Washed">Washed</option>
+                                        <option value="Natural">Natural</option>
+                                        <option value="Honey">Honey</option>
+                                        <option value="Semi-Washed">Semi-Washed</option>
+                                        <option value="Wet Hulled">Wet Hulled</option>
+                                        <option value="Anaerobic">Anaerobic</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Grade</label>
+                                    <select id="kopi-grade">
+                                        <option value="">Pilih grade</option>
+                                        <option value="Specialty">Specialty</option>
+                                        <option value="G1">G1</option>
+                                        <option value="G2">G2</option>
+                                        <option value="G3">G3</option>
+                                        <option value="G4">G4</option>
+                                        <option value="G5">G5</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Supplier</label>
+                                    <select id="kopi-supplier">
+                                        <option value="">Pilih supplier</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Catatan Rasa / Tasting Notes</label>
+                                <textarea id="kopi-catatan" placeholder="Masukkan catatan tambahan..." rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">
+                                <span class="material-icons-round">save</span>
+                                Simpan Kopi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- DETAIL KOPI VIEW -->
+                <div id="view-detail-kopi" class="view">
+                    <div class="detail-container" id="detail-kopi-content">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- MASTER SUPPLIER VIEW -->
+                <div id="view-master-supplier" class="view">
+                    <div class="search-bar">
+                        <div class="search-input-wrapper">
+                            <span class="material-icons-round">search</span>
+                            <input type="text" id="search-supplier" placeholder="Cari supplier..." oninput="filterSupplier()">
+                        </div>
+                        <button class="btn-filter" id="btn-filter-supplier" onclick="toggleFilterPills('supplier')" title="Filter Supplier">
+                            <span class="material-icons-round">tune</span>
+                        </button>
+                        <button class="btn-add" onclick="navigateTo('tambah-supplier')">
+                            <span class="material-icons-round">add</span>
+                            Tambah
+                        </button>
+                    </div>
+                    <div class="filter-pills" id="filter-pills-supplier" style="display:none">
+                        <button class="pill active" onclick="setSupplierFilterPill('all', this)">Semua</button>
+                        <button class="pill" onclick="setSupplierFilterPill('Aktif', this)">Aktif</button>
+                    </div>
+                    <div class="list-container" id="supplier-list">
+                        <div class="empty-state">
+                            <span class="material-icons-round">local_shipping</span>
+                            <p>Belum ada data supplier</p>
+                            <button class="btn-primary btn-sm" onclick="navigateTo('tambah-supplier')">Tambah Supplier</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMBAH SUPPLIER VIEW -->
+                <div id="view-tambah-supplier" class="view">
+                    <div class="form-container">
+                        <form id="form-supplier" onsubmit="saveSupplier(event)">
+                            <input type="hidden" id="supplier-edit-id">
+                            <div class="form-group">
+                                <label>Kode Supplier <span class="required">*</span></label>
+                                <input type="text" id="supplier-kode" placeholder="Contoh: SUP-001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Supplier <span class="required">*</span></label>
+                                <input type="text" id="supplier-nama" placeholder="Contoh: PT. Nusantara Coffee" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Kontak</label>
+                                <input type="text" id="supplier-kontak" placeholder="Contoh: Budi Santoso">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Telepon</label>
+                                <input type="tel" id="supplier-telepon" placeholder="Contoh: 0812-3456-7890">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="supplier-email" placeholder="Contoh: info@nusantara.co.id">
+                            </div>
+                            <div class="form-group">
+                                <label>Alamat</label>
+                                <textarea id="supplier-alamat" placeholder="Masukkan alamat lengkap..." rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">
+                                <span class="material-icons-round">save</span>
+                                Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- MASTER MESIN VIEW -->
+                <div id="view-master-mesin" class="view">
+                    <div class="search-bar">
+                        <div class="search-input-wrapper">
+                            <span class="material-icons-round">search</span>
+                            <input type="text" id="search-mesin" placeholder="Cari mesin..." oninput="filterMesin()">
+                        </div>
+                        <button class="btn-filter" id="btn-filter-mesin" onclick="toggleFilterPills('mesin')" title="Filter Mesin">
+                            <span class="material-icons-round">tune</span>
+                        </button>
+                        <button class="btn-add" onclick="navigateTo('tambah-mesin')">
+                            <span class="material-icons-round">add</span>
+                            Tambah
+                        </button>
+                    </div>
+                    <div class="filter-pills" id="filter-pills-mesin" style="display:none">
+                        <button class="pill active" onclick="setMesinFilterPill('all', this)">Semua</button>
+                        <button class="pill" onclick="setMesinFilterPill('Gas', this)">Gas</button>
+                        <button class="pill" onclick="setMesinFilterPill('Listrik', this)">Listrik</button>
+                    </div>
+                    <div class="list-container" id="mesin-list">
+                        <div class="empty-state">
+                            <span class="material-icons-round">precision_manufacturing</span>
+                            <p>Belum ada data mesin</p>
+                            <button class="btn-primary btn-sm" onclick="navigateTo('tambah-mesin')">Tambah Mesin</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMBAH MESIN VIEW -->
+                <div id="view-tambah-mesin" class="view">
+                    <div class="form-container">
+                        <form id="form-mesin" onsubmit="saveMesin(event)">
+                            <input type="hidden" id="mesin-edit-id">
+                            <div class="form-group">
+                                <label>Kode Mesin <span class="required">*</span></label>
+                                <input type="text" id="mesin-kode" placeholder="Contoh: MES-001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Mesin <span class="required">*</span></label>
+                                <input type="text" id="mesin-nama" placeholder="Contoh: Probat P12" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Merek</label>
+                                <input type="text" id="mesin-merek" placeholder="Contoh: Probat">
+                            </div>
+                            <div class="form-group">
+                                <label>Model</label>
+                                <input type="text" id="mesin-model" placeholder="Contoh: P12">
+                            </div>
+                            <div class="form-group">
+                                <label>Kapasitas Minimum (Kg)</label>
+                                <input type="number" id="mesin-kapasitas-min" placeholder="Contoh: 5" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Kapasitas Maksimum (Kg)</label>
+                                <input type="number" id="mesin-kapasitas-max" placeholder="Contoh: 12" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>Sumber Pemanas</label>
+                                <select id="mesin-pemanas">
+                                    <option value="">Pilih sumber pemanas</option>
+                                    <option value="Gas">Gas</option>
+                                    <option value="Listrik">Listrik</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Catatan</label>
+                                <textarea id="mesin-catatan" placeholder="Masukkan catatan tambahan..." rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">
+                                <span class="material-icons-round">save</span>
+                                Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- MASTER OPERATOR VIEW -->
+                <div id="view-master-operator" class="view">
+                    <div class="search-bar">
+                        <div class="search-input-wrapper">
+                            <span class="material-icons-round">search</span>
+                            <input type="text" id="search-operator" placeholder="Cari operator..." oninput="filterOperator()">
+                        </div>
+                        <button class="btn-filter" id="btn-filter-operator" onclick="toggleFilterPills('operator')" title="Filter Operator">
+                            <span class="material-icons-round">tune</span>
+                        </button>
+                        <button class="btn-add" onclick="navigateTo('tambah-operator')">
+                            <span class="material-icons-round">add</span>
+                            Tambah
+                        </button>
+                    </div>
+                    <div class="filter-pills" id="filter-pills-operator" style="display:none">
+                        <button class="pill active" onclick="setOperatorFilterPill('all', this)">Semua</button>
+                        <button class="pill" onclick="setOperatorFilterPill('Roaster', this)">Roaster</button>
+                        <button class="pill" onclick="setOperatorFilterPill('QC', this)">QC</button>
+                        <button class="pill" onclick="setOperatorFilterPill('Manager', this)">Manager</button>
+                    </div>
+                    <div class="list-container" id="operator-list">
+                        <div class="empty-state">
+                            <span class="material-icons-round">engineering</span>
+                            <p>Belum ada data operator</p>
+                            <button class="btn-primary btn-sm" onclick="navigateTo('tambah-operator')">Tambah Operator</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMBAH OPERATOR VIEW -->
+                <div id="view-tambah-operator" class="view">
+                    <div class="form-container">
+                        <form id="form-operator" onsubmit="saveOperator(event)">
+                            <input type="hidden" id="operator-edit-id">
+                            <div class="form-group">
+                                <label>Nama Operator <span class="required">*</span></label>
+                                <input type="text" id="operator-nama" placeholder="Contoh: Budi Santoso" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="operator-email" placeholder="Contoh: budi@coffee.co.id">
+                            </div>
+                            <div class="form-group">
+                                <label>Telepon</label>
+                                <input type="tel" id="operator-telepon" placeholder="Contoh: 0812-3456-7890">
+                            </div>
+                            <div class="form-group">
+                                <label>Role <span class="required">*</span></label>
+                                <select id="operator-role" required>
+                                    <option value="">Pilih role</option>
+                                    <option value="Roaster">Roaster</option>
+                                    <option value="QC">QC</option>
+                                    <option value="Operator">Operator</option>
+                                    <option value="Manager">Manager</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="operator-status">
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">
+                                <span class="material-icons-round">save</span>
+                                Simpan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ROAST BATCH VIEW -->
+                <div id="view-roast-batch" class="view">
+                    <div class="coming-soon" id="roast-batch-placeholder">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">local_fire_department</span>
+                        </div>
+                        <h3>Roast Batch</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                            <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                            <button class="btn-secondary btn-sm" onclick="toggleBatchDemo()"><span class="material-icons-round" style="font-size:18px;">play_arrow</span> Buka Simulator Roasting</button>
+                        </div>
+                    </div>
+                    <!-- Live Roaster & Batch Form Simulator -->
+                    <div id="roast-batch-interactive" class="simulator-card" style="display:none;">
+                        <div class="simulator-header">
+                            <h4><span class="material-icons-round">local_fire_department</span> Live Roasting Logger</h4>
+                            <button class="btn-icon" onclick="toggleBatchDemo()" title="Tutup Simulator"><span class="material-icons-round">close</span></button>
+                        </div>
+                        <div class="timer-box">
+                            <div class="timer-digits" id="timer-display">00:00</div>
+                            <div class="timer-phase" id="timer-phase-badge">STANDBY / CHARGE</div>
+                            <div class="timer-btns">
+                                <button class="btn-timer-start" id="btn-timer-start" onclick="startRoastTimer()"><span class="material-icons-round">play_arrow</span> Mulai</button>
+                                <button class="btn-timer-pause" id="btn-timer-pause" onclick="pauseRoastTimer()"><span class="material-icons-round">pause</span> Jeda</button>
+                                <button class="btn-timer-reset" onclick="resetRoastTimer()"><span class="material-icons-round">restart_alt</span> Reset</button>
+                            </div>
+                        </div>
+                        <div class="milestones-grid">
+                            <button class="btn-milestone" id="btn-ms-tp" onclick="recordMilestone('tp')">
+                                <span>Turning Point</span>
+                                <span class="milestone-time" id="ms-time-tp">--:--</span>
+                            </button>
+                            <button class="btn-milestone" id="btn-ms-dry" onclick="recordMilestone('dry')">
+                                <span>Yellowing / Dry</span>
+                                <span class="milestone-time" id="ms-time-dry">--:--</span>
+                            </button>
+                            <button class="btn-milestone" id="btn-ms-fc" onclick="recordMilestone('fc')">
+                                <span>First Crack</span>
+                                <span class="milestone-time" id="ms-time-fc">--:--</span>
+                            </button>
+                            <button class="btn-milestone" id="btn-ms-drop" onclick="recordMilestone('drop')">
+                                <span>Drop / Finish</span>
+                                <span class="milestone-time" id="ms-time-drop">--:--</span>
+                            </button>
+                        </div>
+                        <form id="form-roast-batch" onsubmit="saveRoastBatch(event)">
+                            <div class="form-group">
+                                <label>Kopi *</label>
+                                <select id="batch-kopi" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Mesin Roasting *</label>
+                                <select id="batch-mesin" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Operator / Roaster *</label>
+                                <select id="batch-operator" required></select>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <div class="form-group">
+                                    <label>Green Bean (kg) *</label>
+                                    <input type="number" id="batch-green-weight" step="0.1" value="5.0" required oninput="calcWeightLoss()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Roasted Bean (kg)</label>
+                                    <input type="number" id="batch-roasted-weight" step="0.1" value="4.2" oninput="calcWeightLoss()">
+                                </div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                <div class="form-group">
+                                    <label>Roast Level</label>
+                                    <select id="batch-level">
+                                        <option value="Light">Light Roast</option>
+                                        <option value="Medium" selected>Medium Roast (City+)</option>
+                                        <option value="Medium-Dark">Medium-Dark (Full City)</option>
+                                        <option value="Dark">Dark Roast</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Weight Loss (%)</label>
+                                    <input type="text" id="batch-loss-display" value="16.0%" readonly>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full"><span class="material-icons-round">save</span> Simpan Batch Roasting</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ROAST PROFILE VIEW -->
+                <div id="view-roast-profile" class="view">
+                    <div class="coming-soon" id="roast-profile-placeholder">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">insights</span>
+                        </div>
+                        <h3>Roast Profile</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                            <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                            <button class="btn-secondary btn-sm" onclick="toggleProfileDemo()"><span class="material-icons-round" style="font-size:18px;">show_chart</span> Lihat Kurva Profil Roasting</button>
+                        </div>
+                    </div>
+                    <div id="roast-profile-interactive" class="simulator-card" style="display:none;">
+                        <div class="simulator-header">
+                            <h4><span class="material-icons-round">insights</span> Roast Profile Curve (BT / ET / RoR)</h4>
+                            <button class="btn-icon" onclick="toggleProfileDemo()" title="Tutup"><span class="material-icons-round">close</span></button>
+                        </div>
+                        <div class="form-group">
+                            <label>Pilih Profil Roasting</label>
+                            <select id="profile-select" onchange="drawRoastProfileChart()">
+                                <option value="filter-light">Filter Roast (Light Cinnamon - Arabica Gayo)</option>
+                                <option value="espresso-medium" selected>Espresso Roast (Medium City+ - Toraja Blend)</option>
+                                <option value="omni-dark">Omniroast / Dark (Full City - Robusta Blend)</option>
+                            </select>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <canvas id="roastCanvas" width="400" height="200"></canvas>
+                        </div>
+                        <div class="canvas-legend">
+                            <div class="legend-item"><span class="legend-color" style="background:#e8a87c;"></span> Bean Temp (BT)</div>
+                            <div class="legend-item"><span class="legend-color" style="background:#3b82f6;"></span> Env Temp (ET)</div>
+                            <div class="legend-item"><span class="legend-color" style="background:#f59e0b;"></span> RoR (°C/min)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROAST HISTORY VIEW -->
+                <div id="view-roast-history" class="view">
+                    <div class="coming-soon">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">history</span>
+                        </div>
+                        <h3>Roast History</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                    </div>
+                </div>
+
+                <!-- CUPPING VIEW -->
+                <div id="view-cupping" class="view">
+                    <div class="coming-soon" id="cupping-placeholder">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">science</span>
+                        </div>
+                        <h3>Cupping</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                            <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                            <button class="btn-secondary btn-sm" onclick="toggleCuppingDemo()"><span class="material-icons-round" style="font-size:18px;">rate_review</span> Buka Form Cupping SCA</button>
+                        </div>
+                    </div>
+                    <div id="cupping-interactive" class="simulator-card" style="display:none;">
+                        <div class="simulator-header">
+                            <h4><span class="material-icons-round">science</span> SCA Cupping Protocol</h4>
+                            <button class="btn-icon" onclick="toggleCuppingDemo()" title="Tutup"><span class="material-icons-round">close</span></button>
+                        </div>
+                        <div class="cupping-total-score-card">
+                            <div class="cupping-total-val" id="cupping-score-val">84.50</div>
+                            <div class="cupping-grade-label" id="cupping-grade-badge">SPECIALTY GRADE COFFEE</div>
+                        </div>
+                        <div class="form-group">
+                            <label>Sampel Kopi</label>
+                            <select id="cupping-kopi-select"></select>
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Fragrance / Aroma</span><span class="cupping-slider-val" id="val-aroma">8.50</span></div>
+                            <input type="range" id="range-aroma" min="6" max="10" step="0.25" value="8.5" oninput="updateCuppingScore()">
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Flavor</span><span class="cupping-slider-val" id="val-flavor">8.50</span></div>
+                            <input type="range" id="range-flavor" min="6" max="10" step="0.25" value="8.5" oninput="updateCuppingScore()">
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Aftertaste</span><span class="cupping-slider-val" id="val-aftertaste">8.25</span></div>
+                            <input type="range" id="range-aftertaste" min="6" max="10" step="0.25" value="8.25" oninput="updateCuppingScore()">
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Acidity</span><span class="cupping-slider-val" id="val-acidity">8.50</span></div>
+                            <input type="range" id="range-acidity" min="6" max="10" step="0.25" value="8.5" oninput="updateCuppingScore()">
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Body</span><span class="cupping-slider-val" id="val-body">8.25</span></div>
+                            <input type="range" id="range-body" min="6" max="10" step="0.25" value="8.25" oninput="updateCuppingScore()">
+                        </div>
+                        <div class="cupping-slider-row">
+                            <div class="cupping-slider-head"><span>Balance</span><span class="cupping-slider-val" id="val-balance">8.50</span></div>
+                            <input type="range" id="range-balance" min="6" max="10" step="0.25" value="8.5" oninput="updateCuppingScore()">
+                        </div>
+                        <button type="button" class="btn-primary btn-full mt-16" onclick="saveCuppingScore()"><span class="material-icons-round">save</span> Simpan Evaluasi Cupping</button>
+                    </div>
+                </div>
+
+                <!-- QUALITY CONTROL VIEW -->
+                <div id="view-quality-control" class="view">
+                    <div class="coming-soon">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">verified</span>
+                        </div>
+                        <h3>Quality Control</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                    </div>
+                </div>
+
+                <!-- LAPORAN VIEW -->
+                <div id="view-laporan" class="view">
+                    <div class="coming-soon" id="laporan-placeholder">
+                        <div class="coming-soon-icon">
+                            <span class="material-icons-round">assessment</span>
+                        </div>
+                        <h3>Laporan</h3>
+                        <p>Fitur ini akan tersedia pada tahap berikutnya.</p>
+                        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+                            <button class="btn-primary btn-sm" onclick="navigateTo('dashboard')">Kembali ke Dashboard</button>
+                            <button class="btn-secondary btn-sm" onclick="toggleLaporanDemo()"><span class="material-icons-round" style="font-size:18px;">bar_chart</span> Buka Statistik Produksi</button>
+                        </div>
+                    </div>
+                    <div id="laporan-interactive" class="simulator-card" style="display:none;">
+                        <div class="simulator-header">
+                            <h4><span class="material-icons-round">assessment</span> Ringkasan Produksi Roastery</h4>
+                            <button class="btn-icon" onclick="toggleLaporanDemo()" title="Tutup"><span class="material-icons-round">close</span></button>
+                        </div>
+                        <div class="report-grid">
+                            <div class="report-stat-card">
+                                <span class="stat-label">Total Green Bean</span>
+                                <div class="stat-num" id="rep-green">60.0 kg</div>
+                            </div>
+                            <div class="report-stat-card">
+                                <span class="stat-label">Total Roasted</span>
+                                <div class="stat-num" id="rep-roasted">50.8 kg</div>
+                            </div>
+                            <div class="report-stat-card">
+                                <span class="stat-label">Rata-rata Susut</span>
+                                <div class="stat-num" id="rep-loss">15.3%</div>
+                            </div>
+                            <div class="report-stat-card">
+                                <span class="stat-label">Total Batch</span>
+                                <div class="stat-num" id="rep-batches">6 Batch</div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-primary btn-full" onclick="exportDataCSV()"><span class="material-icons-round">download</span> Export Laporan (CSV)</button>
+                    </div>
+                </div>
+
+                <!-- PENGATURAN VIEW -->
+                <div id="view-pengaturan" class="view">
+                    <div class="settings-container">
+                        <div class="settings-section">
+                            <div class="settings-item" onclick="openModalProfile()">
+                                <span class="material-icons-round">person_outline</span>
+                                <span class="settings-label">Profil Pengguna</span>
+                                <span class="material-icons-round settings-arrow">chevron_right</span>
+                            </div>
+                            <div class="settings-item" onclick="openModalPassword()">
+                                <span class="material-icons-round">lock_outline</span>
+                                <span class="settings-label">Ubah Password</span>
+                                <span class="material-icons-round settings-arrow">chevron_right</span>
+                            </div>
+                            <div class="settings-item" onclick="toggleNotifications()">
+                                <span class="material-icons-round">notifications_none</span>
+                                <span class="settings-label">Notifikasi</span>
+                                <span class="settings-value" id="setting-notif-val">Aktif</span>
+                            </div>
+                            <div class="settings-item" onclick="toggleTheme()">
+                                <span class="material-icons-round">palette</span>
+                                <span class="settings-label">Tema</span>
+                                <span class="settings-value" id="setting-theme-val">Gelap</span>
+                            </div>
+                            <div class="settings-item" onclick="toggleLanguage()">
+                                <span class="material-icons-round">language</span>
+                                <span class="settings-label">Bahasa</span>
+                                <span class="settings-value" id="setting-lang-val">Indonesia</span>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="settings-section-header">Sistem</div>
+                            <div class="settings-item" onclick="backupData()">
+                                <span class="material-icons-round">backup</span>
+                                <span class="settings-label">Backup Data</span>
+                                <span class="material-icons-round settings-arrow">chevron_right</span>
+                            </div>
+                            <div class="settings-item" onclick="triggerRestoreFileInput()">
+                                <span class="material-icons-round">restore</span>
+                                <span class="settings-label">Restore Data (JSON)</span>
+                                <span class="material-icons-round settings-arrow">chevron_right</span>
+                            </div>
+                            <div class="settings-item" onclick="openModalAbout()">
+                                <span class="material-icons-round">info_outline</span>
+                                <span class="settings-label">Tentang Aplikasi</span>
+                                <span class="material-icons-round settings-arrow">chevron_right</span>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <div class="settings-item logout-item" onclick="logout()">
+                                <span class="material-icons-round">logout</span>
+                                <span class="settings-label">Keluar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav" id="bottom-nav">
+                <a class="nav-item active" data-view="dashboard" onclick="navigateTo('dashboard')">
+                    <span class="material-icons-round">dashboard</span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+                <a class="nav-item" data-view="master-data" onclick="toggleMasterDataSheet()">
+                    <span class="material-icons-round">folder_open</span>
+                    <span class="nav-label">Master Data</span>
+                </a>
+                <a class="nav-item" data-view="roasting" onclick="toggleRoastingSheet()">
+                    <span class="material-icons-round">local_fire_department</span>
+                    <span class="nav-label">Roasting</span>
+                </a>
+                <a class="nav-item" data-view="laporan" onclick="navigateTo('laporan')">
+                    <span class="material-icons-round">assessment</span>
+                    <span class="nav-label">Laporan</span>
+                </a>
+                <a class="nav-item" data-view="pengaturan" onclick="navigateTo('pengaturan')">
+                    <span class="material-icons-round">settings</span>
+                    <span class="nav-label">Lainnya</span>
+                </a>
+            </nav>
+            </div> <!-- /main-body -->
+
+            <!-- Bottom Sheet: Master Data -->
+            <div class="bottom-sheet-overlay" id="master-data-overlay" onclick="closeMasterDataSheet()"></div>
+            <div class="bottom-sheet" id="master-data-sheet">
+                <div class="bottom-sheet-handle"></div>
+                <div class="bottom-sheet-header">
+                    <div class="bottom-sheet-avatar">
+                        <span class="material-icons-round">person</span>
+                    </div>
+                    <div>
+                        <h4>Admin</h4>
+                        <span class="bottom-sheet-role">Administrator</span>
+                    </div>
+                </div>
+                <div class="bottom-sheet-grid">
+                    <div class="sheet-grid-item" onclick="navigateTo('dashboard'); closeMasterDataSheet();">
+                        <div class="sheet-icon dashboard-sheet-icon">
+                            <span class="material-icons-round">dashboard</span>
+                        </div>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="sheet-grid-item" onclick="navigateTo('master-kopi'); closeMasterDataSheet();">
+                        <div class="sheet-icon kopi-sheet-icon">
+                            <span class="material-icons-round">coffee</span>
+                        </div>
+                        <span>Master Data</span>
+                    </div>
+                    <div class="sheet-grid-item" onclick="navigateTo('roast-batch'); closeMasterDataSheet();">
+                        <div class="sheet-icon roasting-sheet-icon">
+                            <span class="material-icons-round">local_fire_department</span>
+                        </div>
+                        <span>Roasting</span>
+                    </div>
+                    <div class="sheet-grid-item" onclick="navigateTo('laporan'); closeMasterDataSheet();">
+                        <div class="sheet-icon laporan-sheet-icon">
+                            <span class="material-icons-round">assessment</span>
+                        </div>
+                        <span>Laporan</span>
+                    </div>
+                </div>
+                <div class="bottom-sheet-links">
+                    <a class="sheet-link-item" onclick="navigateTo('pengaturan'); closeMasterDataSheet();">
+                        <span class="material-icons-round">settings</span>
+                        Pengaturan
+                    </a>
+                    <a class="sheet-link-item logout-link" onclick="logout()">
+                        <span class="material-icons-round">logout</span>
+                        Keluar
+                    </a>
+                </div>
+                <div class="bottom-sheet-footer">
+                    COFFEE ROASTING SYSTEM<br>v1.0.0
+                </div>
+            </div>
+
+            <!-- Bottom Sheet: Roasting -->
+            <div class="bottom-sheet-overlay" id="roasting-overlay" onclick="closeRoastingSheet()"></div>
+            <div class="bottom-sheet" id="roasting-sheet">
+                <div class="bottom-sheet-handle"></div>
+                <h3 class="bottom-sheet-title">Roasting</h3>
+                <div class="bottom-sheet-menu-list">
+                    <a class="sheet-menu-item" onclick="navigateTo('roast-batch'); closeRoastingSheet();">
+                        <span class="material-icons-round">local_fire_department</span>
+                        <div>
+                            <h4>Roast Batch</h4>
+                            <p>Kelola batch roasting</p>
+                        </div>
+                        <span class="material-icons-round">chevron_right</span>
+                    </a>
+                    <a class="sheet-menu-item" onclick="navigateTo('roast-profile'); closeRoastingSheet();">
+                        <span class="material-icons-round">insights</span>
+                        <div>
+                            <h4>Roast Profile</h4>
+                            <p>Atur profil roasting</p>
+                        </div>
+                        <span class="material-icons-round">chevron_right</span>
+                    </a>
+                    <a class="sheet-menu-item" onclick="navigateTo('roast-history'); closeRoastingSheet();">
+                        <span class="material-icons-round">history</span>
+                        <div>
+                            <h4>Roast History</h4>
+                            <p>Riwayat roasting</p>
+                        </div>
+                        <span class="material-icons-round">chevron_right</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Toast -->
+        <div class="toast" id="toast"></div>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal-overlay" id="delete-modal">
+            <div class="modal">
+                <div class="modal-icon">
+                    <span class="material-icons-round">warning_amber</span>
+                </div>
+                <h3>Hapus Data?</h3>
+                <p id="delete-modal-msg">Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="closeDeleteModal()">Batal</button>
+                    <button class="btn-danger" id="btn-confirm-delete">Hapus</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Modal -->
+        <div class="modal-overlay" id="profile-modal">
+            <div class="modal" style="max-width:380px; text-align:left;">
+                <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="margin:0;">Profil Pengguna</h3>
+                    <button class="btn-icon" onclick="closeProfileModal()"><span class="material-icons-round">close</span></button>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                    <div class="sidebar-avatar" style="width:52px; height:52px;">
+                        <span class="material-icons-round" style="font-size:28px;">person</span>
+                    </div>
+                    <div>
+                        <h4 id="profile-name-display" style="font-size:1rem; font-weight:700;">Admin</h4>
+                        <span style="font-size:0.8rem; color:var(--text-secondary);">Administrator</span>
+                    </div>
+                </div>
+                <form id="form-user-profile" onsubmit="saveUserProfile(event)">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="prof-name" value="Admin" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="prof-email" value="admin@coffee.co.id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" value="Administrator" readonly style="opacity:0.7;">
+                    </div>
+                    <div class="modal-actions" style="margin-top:20px;">
+                        <button type="button" class="btn-secondary" onclick="closeProfileModal()">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Modal -->
+        <div class="modal-overlay" id="password-modal">
+            <div class="modal" style="max-width:360px; text-align:left;">
+                <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h3 style="margin:0;">Ubah Password</h3>
+                    <button class="btn-icon" onclick="closePasswordModal()"><span class="material-icons-round">close</span></button>
+                </div>
+                <form id="form-change-password" onsubmit="saveNewPassword(event)">
+                    <div class="form-group">
+                        <label>Password Saat Ini</label>
+                        <input type="password" id="pwd-old" required placeholder="Masukkan password lama">
+                    </div>
+                    <div class="form-group">
+                        <label>Password Baru</label>
+                        <input type="password" id="pwd-new" required placeholder="Minimal 5 karakter">
+                    </div>
+                    <div class="form-group">
+                        <label>Konfirmasi Password Baru</label>
+                        <input type="password" id="pwd-confirm" required placeholder="Ulangi password baru">
+                    </div>
+                    <div class="modal-actions" style="margin-top:20px;">
+                        <button type="button" class="btn-secondary" onclick="closePasswordModal()">Batal</button>
+                        <button type="submit" class="btn-primary">Ubah Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div class="modal-overlay" id="about-modal">
+            <div class="modal" style="max-width:360px;">
+                <div class="splash-icon" style="width:64px; height:64px; margin:0 auto 16px;">
+                    <span class="material-icons-round" style="font-size:32px;">local_cafe</span>
+                </div>
+                <h3 style="margin-bottom:4px;">Coffee Roasting System</h3>
+                <p style="font-size:0.8rem; color:var(--accent-primary); font-weight:600; margin-bottom:14px;">Versi 1.0.0 Production</p>
+                <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">
+                    Sistem manajemen roasting kopi profesional untuk pencatatan green bean, supplier, mesin roaster, profil roasting, cupping SCA, dan kalkulasi yield loss.
+                </p>
+                <button type="button" class="btn-primary" onclick="closeAboutModal()" style="width:100%;">Tutup</button>
+            </div>
+        </div>
+
+        <!-- Hidden File Input for Restore -->
+        <input type="file" id="backup-file-input" style="display:none;" accept=".json" onchange="handleRestoreFile(event)">
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
